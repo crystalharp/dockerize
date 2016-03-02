@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
+	"strconv"
 )
 
 type sliceVar []string
@@ -193,6 +194,22 @@ func main() {
 
 	// Setup context
 	ctx, cancel = context.WithCancel(context.Background())
+
+	portNumStr := GetEnv("NEED_PORTS")
+	if len(portNumStr) > 0 {
+		portNum, err := strconv.Atoi(portNumStr)
+		if err == nil {
+			neededPorts, err := GetAvailablePorts(portNum)
+			if err == nil {
+				fmt.Println("get ports:", neededPorts)
+				ExportPortEnv(neededPorts)
+			} else {
+				fmt.Println("can't get available port:", err.Error())
+			}
+		} else {
+			fmt.Println("can't parse $NEED_PORTS:", err.Error())
+		}
+	}
 
 	if flag.NArg() > 0 {
 		wg.Add(1)

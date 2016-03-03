@@ -14,8 +14,16 @@ func SetEnv(name string, value string) {
 	os.Setenv(name, value)
 }
 
-func ExportPortEnv(ports []int) {
+func FormatPortEnv(ports []int) map[string]string {
+	portEnv := make(map[string]string)
 	for i, port := range ports {
-		SetEnv(PORT_ENV_PREFIX + strconv.Itoa(i), strconv.Itoa(port))
+		portEnv[PORT_ENV_PREFIX + strconv.Itoa(i)] = strconv.Itoa(port)
+	}
+	return portEnv
+}
+
+func ExportEnvs(ports map[string]string) {
+	for key, value := range ports {
+		SetEnv(key, value)
 	}
 }

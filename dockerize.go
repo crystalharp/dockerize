@@ -202,7 +202,12 @@ func main() {
 			neededPorts, err := GetAvailablePorts(portNum)
 			if err == nil {
 				fmt.Println("get ports:", neededPorts)
-				ExportPortEnv(neededPorts)
+				portEnvs := FormatPortEnv(neededPorts)
+				ExportEnvs(portEnvs)
+				err = ReportInfos(portEnvs)
+				if err != nil {
+					fmt.Println("can't report port to kubenetes:", err.Error())
+				}
 			} else {
 				fmt.Println("can't get available port:", err.Error())
 			}

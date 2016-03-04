@@ -7,6 +7,8 @@ import (
 	"sync"
 	"log"
 	"errors"
+	"time"
+"math/rand"
 )
 
 var PORT_SCAN_FILE = [...]string {"/proc/net/raw", "/proc/net/raw6", "/proc/net/tcp", "/proc/net/tcp6",
@@ -151,8 +153,10 @@ func GetAvailablePorts(portNum int) ([]int, error) {
 		return nil, err
 	}
 	var ports []int
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < portNum; i++ {
-		ports = append(ports, availablePorts[i])
+		pos := r.Intn(len(availablePorts))
+		ports = append(ports, availablePorts[pos])
 	}
 	return ports, nil
 }

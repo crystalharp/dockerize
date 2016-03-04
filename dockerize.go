@@ -172,6 +172,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	portNumStr := GetEnv("NEED_PORTS")
+	if len(portNumStr) > 0 {
+		portNum, err := strconv.Atoi(portNumStr)
+		if err == nil {
+			neededPorts, err := GetAvailablePorts(portNum)
+			if err == nil {
+				fmt.Println("get ports:", neededPorts)
+				portEnvs := FormatPortEnv(neededPorts)
+				ExportEnvs(portEnvs)
+				err = ReportInfos(portEnvs)
+				if err != nil {
+					fmt.Println("can't report port to kubenetes:", err.Error())
+				}
+			} else {
+				fmt.Println("can't get available port:", err.Error())
+			}
+		} else {
+			fmt.Println("can't parse $NEED_PORTS:", err.Error())
+		}
+	}
+
 	if delimsFlag != "" {
 		delims = strings.Split(delimsFlag, ":")
 		if len(delims) != 2 {
@@ -194,27 +215,6 @@ func main() {
 
 	// Setup context
 	ctx, cancel = context.WithCancel(context.Background())
-
-	portNumStr := GetEnv("NEED_PORTS")
-	if len(portNumStr) > 0 {
-		portNum, err := strconv.Atoi(portNumStr)
-		if err == nil {
-			neededPorts, err := GetAvailablePorts(portNum)
-			if err == nil {
-				fmt.Println("get ports:", neededPorts)
-				portEnvs := FormatPortEnv(neededPorts)
-				ExportEnvs(portEnvs)
-				err = ReportInfos(portEnvs)
-				if err != nil {
-					fmt.Println("can't report port to kubenetes:", err.Error())
-				}
-			} else {
-				fmt.Println("can't get available port:", err.Error())
-			}
-		} else {
-			fmt.Println("can't parse $NEED_PORTS:", err.Error())
-		}
-	}
 
 	if flag.NArg() > 0 {
 		wg.Add(1)

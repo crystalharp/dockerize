@@ -9,6 +9,7 @@ import (
 	"errors"
 	"time"
 "math/rand"
+	"os"
 )
 
 var PORT_SCAN_FILE = [...]string {"/proc/net/raw", "/proc/net/raw6", "/proc/net/tcp", "/proc/net/tcp6",
@@ -118,8 +119,10 @@ func (s *PortSet) List() []interface{} {
 func GetAllAvailablePorts() (availablePorts []int, err error) {
 	var portSet *PortSet = NewSet()
 	for _, file := range PORT_SCAN_FILE {
-		// todo(xupeng): maybe tcp6 file not exists
 		portInfoStr, readFileError := ioutil.ReadFile(file)
+		if os.IsNotExist(readFileError) {
+			continue
+		}
 		if readFileError != nil {
 			log.Println("[Warn] Get Available Ports: ", readFileError.Error())
 			return nil, errors.New("can't open proc file to check port:" + readFileError.Error())

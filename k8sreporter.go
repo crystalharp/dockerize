@@ -1,11 +1,12 @@
 package main
+
 import (
-	"fmt"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"io"
-	"encoding/json"
 	"strings"
 )
 
@@ -17,12 +18,11 @@ type metadatast struct {
 	Annotations map[string]string
 }
 
-func getPatchUrl() (string, error) {
+func getPatchUrl(server string) (string, error) {
 	ns := GetEnv("MY_POD_NAMESPACE")
 	name := GetEnv("MY_POD_NAME")
-	server := GetEnv("K8S_API_SERVER_ADDR")
 	if len(ns) == 0 || len(name) == 0 || len(server) == 0 {
-		log.Fatalf("namespace:%s, podname:%s, k8sserver:%s", ns, name, server)
+		log.Fatalf("failed to get url:namespace:%s, podname:%s, k8sserver:%s", ns, name, server)
 		return "", errors.New("failed to get k8s api server")
 	}
 	return fmt.Sprintf("http://%s/api/v1/namespaces/%s/pods/%s", server, ns, name), nil
@@ -45,7 +45,7 @@ func patchInfo(apiAddr string, body io.Reader) error {
 	return nil
 }
 
-func ReportInfos(portEnvs map[string]string) error {
+func ReportInfos(server string, portEnvs map[string]string) error {
 
 	st := podSpec{metadatast{portEnvs}}
 	body, err := json.Marshal(st)
@@ -53,15 +53,14 @@ func ReportInfos(portEnvs map[string]string) error {
 		return err
 	}
 
-	server, err := getPatchUrl()
+	url, err := getPatchUrl(server)
 	if err != nil {
 		return err
 		err.Error()
 	}
 	s := string(body)
 
-	return patchInfo(server, strings.NewReader(s))
-
+	return patchInfo(url, strings.NewReader(s))
 }
 
 //func main() {

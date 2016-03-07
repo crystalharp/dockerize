@@ -174,24 +174,25 @@ func main() {
 
 	// detect what port should use
 	portNumStr := GetEnv("NEED_PORTS")
+	server := GetEnv("K8S_API_SERVER_ADDR")
 	if len(portNumStr) > 0 {
 		portNum, err := strconv.Atoi(portNumStr)
 		if err == nil {
 			neededPorts, err := GetAvailablePorts(portNum)
 			if err != nil {
-				fmt.Println("can't get available port:", err.Error())
+				log.Fatalf("can't get available port:", err.Error())
 				os.Exit(5)
 			}
 			fmt.Println("get ports:", neededPorts)
 			portEnvs := FormatPortEnv(neededPorts)
 			ExportEnvs(portEnvs)
-			err = ReportInfos(portEnvs)
+			err = ReportInfos(server, portEnvs)
 			if err != nil {
-				fmt.Println("can't report port to kubenetes:", err.Error())
+				log.Fatalf("can't report port to kubenetes:", err.Error())
 				os.Exit(6)
 			}
 		} else {
-			fmt.Println("can't parse $NEED_PORTS:", err.Error())
+			log.Fatalf("can't parse $NEED_PORTS:", err.Error())
 		}
 	}
 

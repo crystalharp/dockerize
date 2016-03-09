@@ -177,7 +177,7 @@ func main() {
 	server := GetEnv("K8S_API_SERVER_ADDR")
 	if len(portNumStr) > 0 {
 		portNum, err := strconv.Atoi(portNumStr)
-		if err == nil {
+		if err == nil && portNum > 0 {
 			neededPorts, err := GetAvailablePorts(portNum)
 			if err != nil {
 				log.Fatalf("can't get available port:", err.Error())

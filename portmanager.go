@@ -109,11 +109,16 @@ func GetAllAvailablePorts() (availablePorts []int, err error) {
 }
 
 func GetAvailablePorts(portNum int) ([]int, error) {
+	var ports []int
+	if portNum < 0 {
+		return nil, errors.New("portNum not positive:" + string(portNum))
+	} else if portNum == 0 {
+		return ports, nil
+	}
 	availablePorts, err := GetAllAvailablePorts()
 	if err != nil {
 		return nil, err
 	}
-	var ports []int
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < portNum; i++ {
 		pos := r.Intn(len(availablePorts))

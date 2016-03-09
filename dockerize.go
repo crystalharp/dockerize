@@ -202,6 +202,18 @@ func main() {
 			log.Fatalf("bad delimiters argument: %s. expected \"left:right\"", delimsFlag)
 		}
 	}
+	templateEnv := GetEnv("DOMEIZE_TEMPLATES")
+	var templates sliceVar
+	if (len(templateEnv) > 0) {
+		if strings.Contains(templateEnv, ",") {
+			templates = strings.Split(templateEnv, ",")
+		} else {
+			templates = append(templates, templateEnv)
+		}
+	}
+	for _, t := range templates {
+		templatesFlag = append(templatesFlag, t)
+	}
 	for _, t := range templatesFlag {
 		template, dest := t, ""
 		if strings.Contains(t, ":") {

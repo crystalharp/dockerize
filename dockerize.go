@@ -222,6 +222,8 @@ func main() {
 				log.Fatalf("bad template argument: %s. expected \"/template:/dest\"", t)
 			}
 			template, dest = parts[0], parts[1]
+//		} else {
+//			log.Fatalf("bad template argument: %s. expected \"/template:/dest\"", t)
 		}
 		generateFile(template, dest)
 	}

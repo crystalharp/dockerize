@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"io/ioutil"
 )
 
 type podSpec struct {
@@ -39,8 +40,11 @@ func patchInfo(apiAddr string, body io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 200 {
-		return errors.New("report port not ok")
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		bodystr := string(body);
+		errInfo := fmt.Sprintf("report port not ok, code:%d, ret:%s", resp.StatusCode, bodystr)
+		return errors.New(errInfo)
 	}
 	return nil
 }

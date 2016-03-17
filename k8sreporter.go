@@ -11,12 +11,17 @@ import (
 	"io/ioutil"
 )
 
-type podSpec struct {
-	Metadata metadatast
-}
+//type podSpec struct {
+//	Metadata metadatast
+//}
+//
+//type metadatast struct {
+//	Annotations map[string]string
+//}
 
-type metadatast struct {
-	Annotations map[string]string
+type response struct {
+	resultCode int
+	resultMsg  string
 }
 
 func getPatchUrl(server string, clusterName string) (string, error) {
@@ -35,6 +40,7 @@ func patchInfo(apiAddr string, body io.Reader) error {
 		return err
 	}
 //	req.Header.Add("Content-Type", "application/strategic-merge-patch+json")
+	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -46,13 +52,26 @@ func patchInfo(apiAddr string, body io.Reader) error {
 		errInfo := fmt.Sprintf("report port not ok, code:%d, ret:%s", resp.StatusCode, bodystr)
 		return errors.New(errInfo)
 	}
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	var respcontent response
+	err = json.Unmarshal(data, &respcontent)
+	if err != nil {
+		return err
+	}
+	if respcontent.resultCode != 200 {
+		errInfo := fmt.Sprintf("report port not ok, code:%d, ret:%s", respcontent.resultCode, respcontent.resultMsg)
+		return errors.New(errInfo)
+	}
 	return nil
 }
 
 func ReportInfos(server string, clusterName string, portEnvs map[string]string) error {
 
-	st := podSpec{metadatast{portEnvs}}
-	body, err := json.Marshal(st)
+//	st := podSpec{metadatast{portEnvs}}
+	body, err := json.Marshal(portEnvs)
 	if err != nil {
 		return err
 	}

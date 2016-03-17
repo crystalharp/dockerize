@@ -20,8 +20,8 @@ import (
 //}
 
 type response struct {
-	resultCode int
-	resultMsg  string
+	ResultCode int
+	ResultMsg string
 }
 
 func getPatchUrl(server string, clusterName string) (string, error) {
@@ -62,8 +62,8 @@ func patchInfo(apiAddr string, body io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if respcontent.resultCode != 200 {
-		errInfo := fmt.Sprintf("report port not ok, code:%d, ret:%s", respcontent.resultCode, respcontent.resultMsg)
+	if respcontent.ResultCode != 200 {
+		errInfo := fmt.Sprintf("report port not ok, code:%d, ret:%s", respcontent.ResultCode, respcontent.ResultMsg)
 		return errors.New(errInfo)
 	}
 	return nil

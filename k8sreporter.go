@@ -31,6 +31,7 @@ func getPatchUrl(server string, clusterName string) (string, error) {
 		log.Fatalf("failed to get url:namespace:%s, podname:%s, k8sserver:%s", ns, name, server)
 		return "", errors.New("failed to get k8s api server")
 	}
+	server = strings.Replace(server, "http://", "", 1)
 	return fmt.Sprintf("http://%s/api/agent/pod/%s/%s/%s/annotation", server, clusterName, ns, name), nil
 }
 

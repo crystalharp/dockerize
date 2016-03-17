@@ -174,7 +174,8 @@ func main() {
 
 	// detect what port should use
 	portNumStr := GetEnv("NEED_PORTS")
-	server := GetEnv("K8S_API_SERVER_ADDR")
+	server := GetEnv("DOMEOS_SERVER_ADDR")
+	clusterName := GetEnv("CLUSTER_NAME")
 	if len(portNumStr) > 0 {
 		portNum, err := strconv.Atoi(portNumStr)
 		if err == nil && portNum > 0 {
@@ -186,7 +187,7 @@ func main() {
 			fmt.Println("get ports:", neededPorts)
 			portEnvs := FormatPortEnv(neededPorts)
 			ExportEnvs(portEnvs)
-			err = ReportInfos(server, portEnvs)
+			err = ReportInfos(server, clusterName, portEnvs)
 			if err != nil {
 				log.Fatalf("can't report port to kubenetes:", err.Error())
 				os.Exit(6)

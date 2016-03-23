@@ -1,5 +1,6 @@
-dockerize ![version v0.2.0](https://img.shields.io/badge/version-v0.2.0-brightgreen.svg) ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+domeize ![version v0.2.0](https://img.shields.io/badge/version-v0.2.0-brightgreen.svg) ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 =============
+domeize if forked from dockerize and added some more function to meet needs for DomeOS.
 
 Utility to simplify running applications in docker containers.
 
@@ -50,6 +51,10 @@ send `/var/log/nginx/access.log` to `STDOUT` and `/var/log/nginx/error.log` to `
 ```
 CMD dockerize -template /etc/nginx/nginx.tmpl:/etc/nginx/nginx.conf -stdout /var/log/nginx/access.log -stderr /var/log/nginx/error.log -wait tcp://web:8000 nginx
 ```
+
+modification:
+1. read from env `NEED_PORTS` to get a number `n` to allocate unused ports, and export `AUTO_PORT0`...`AUTO_PORT(n-1)` to env, then domeize can replace the var to config file. also need env var `DOMEOS_SERVER_ADDR`, `CLUSTER_NAME`, `MY_POD_NAMESPACE`, `MY_POD_NAME` to report the port info (`AUTO_PORT0`...) through DomeOS to kubenetes, then put to annotation of meta for pod info.
+2. env `DOMEIZE_TEMPLATES` to pass template file list, you can use `/etc/nginx/nginx.tmpl:/etc/nginx/nginx.conf` or `/path/to/1.tmpl:/path/to/1.conf,/path/to/2.tmpl:/path/to/2.conf` to replace too much `-template` parameter
 
 ### Command-line Options
 
@@ -130,3 +135,5 @@ MIT
 [go.string.Replace]: https://golang.org/pkg/strings/#Replace
 [go.url.Parse]: https://golang.org/pkg/net/url/#Parse
 [go.url.URL]: https://golang.org/pkg/net/url/#URL
+
+
